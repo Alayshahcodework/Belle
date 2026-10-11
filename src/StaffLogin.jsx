@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { listDemoAccounts, staffLogin } from './api.js';
 
 export default function StaffLogin({ onSignedIn }) {
-  const [username, setUsername] = useState('charge');
-  const [password, setPassword] = useState('belle');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
   const [accounts, setAccounts] = useState([]);
@@ -71,7 +71,7 @@ export default function StaffLogin({ onSignedIn }) {
                   key={account.username}
                   type="button"
                   onClick={() => {
-                    setUsername(account.username);
+                    setUsername('admin');
                     setPassword('belle');
                   }}
                 >
