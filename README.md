@@ -2,7 +2,7 @@
 
 A patient taps their NFC card on the bedside tablet, says what they need, and
 the request goes to the department that can actually do it — not to a nurse's
-pager.
+pager.   
 
 Rutgers Health Hack 2026 · Ops Unleashed Challenge 2 (Inpatient AI).
 
