@@ -34,7 +34,7 @@ const BUILT_IN = [
   { username: 'm.fitzgerald', displayName: 'RN M. Fitzgerald', role: 'nurse', chartName: 'RN M. Fitzgerald' },
   { username: 'p.sharma', displayName: 'RN P. Sharma', role: 'nurse', chartName: 'RN P. Sharma' },
   { username: 's.mathew', displayName: 'RN S. Mathew', role: 'nurse', chartName: 'RN S. Mathew' },
-  { username: 'charge', displayName: 'RN B. Osei (Charge)', role: 'charge', chartName: null },
+  { username: 'charge', displayName: 'RN B. Osei (Charge)', role: 'charge', chartName: null, Password: 'belle' },
   { username: 'pct', displayName: 'T. Nguyen', role: 'pct', chartName: null },
   { username: 'hk', displayName: 'M. Diallo', role: 'housekeeping', chartName: null },
   { username: 'food', displayName: 'R. Castillo', role: 'food', chartName: null },
