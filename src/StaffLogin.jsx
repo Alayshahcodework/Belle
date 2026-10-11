@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { listDemoAccounts, staffLogin } from './api.js';
 
 export default function StaffLogin({ onSignedIn }) {
-  username = 'charge'
+  const username = 'charge';
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -40,9 +40,9 @@ export default function StaffLogin({ onSignedIn }) {
           <span>Username</span>
           <input
             value={username}
+            readOnly
             autoCapitalize="none"
             autoCorrect="off"
-            autoFocus
           />
         </label>
 
@@ -52,6 +52,7 @@ export default function StaffLogin({ onSignedIn }) {
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            autoFocus
           />
         </label>
 
