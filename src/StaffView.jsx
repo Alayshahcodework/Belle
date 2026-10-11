@@ -261,6 +261,11 @@ export default function StaffView({ session, onSignedOut }) {
           <span>{session.roleLabel}</span>
         </div>
         <span className={`conn ${connection}`}>{connection}</span>
+        {session.role === 'charge' ? (
+          <a className="ghost small header-link" href="#/admin">
+            Add patient / staff
+          </a>
+        ) : null}
         <button type="button" className="ghost small" onClick={() => resetDemo().catch(() => {})}>
           Reset demo
         </button>

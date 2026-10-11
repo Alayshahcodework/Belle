@@ -22,14 +22,27 @@ import {
   departmentFor,
 } from '../shared/config.js';
 import { SHIFTS, STAFFING, shiftFor, staffOnDuty } from '../shared/eta.js';
-import { listDemoAccounts, login, logout, requireStaff, sessionFor } from './auth.js';
+import {
+  addStaff,
+  listDemoAccounts,
+  listStaff,
+  login,
+  logout,
+  nurseChartNames,
+  requireCharge,
+  requireStaff,
+  sessionFor,
+} from './auth.js';
 import { applyGuardrails } from './guardrails.js';
 import {
+  addPatient,
   allPatients,
   bedsideProfile,
   patientByCard,
   patientById,
   patientCount,
+  patientCountNow,
+  rosterOptions,
   staffProfile,
 } from './patients.js';
 import {
@@ -100,7 +113,7 @@ app.get('/api/meta', (_req, res) => {
     quickActions: QUICK_ACTIONS,
     nurseAction: NURSE_ACTION,
     statuses: STATUSES,
-    patientCount,
+    patientCount: patientCountNow(),
     classifier: geminiEnabled() ? 'gemini' : 'rules',
     shift: { id: shift, ...SHIFTS[shift] },
     staffing: Object.fromEntries(DEPARTMENT_ORDER.map((id) => [id, staffOnDuty(id, shift)])),
@@ -265,6 +278,38 @@ app.patch('/api/requests/:id', requireStaff, (req, res) => {
 app.post('/api/reset', requireStaff, (_req, res) => {
   resetTickets();
   res.json({ ok: true });
+});
+
+// --- admin: add staff and patients (charge nurse only) ------------------------
+const admin = [requireStaff, requireCharge];
+
+app.get('/api/admin/options', ...admin, (_req, res) => {
+  res.json({ ...rosterOptions(), nurses: nurseChartNames(), roles: ROLES });
+});
+
+app.get('/api/admin/staff', ...admin, (_req, res) => res.json(listStaff()));
+
+app.post('/api/admin/staff', ...admin, (req, res) => {
+  try {
+    res.status(201).json(addStaff(req.body ?? {}));
+  } catch (error) {
+    res.status(error.status ?? 500).json({ error: error.message });
+  }
+});
+
+app.post('/api/admin/patients', ...admin, (req, res) => {
+  try {
+    const { patient, persisted } = addPatient(req.body ?? {});
+    // The card is issued now, so hand back the URL to write onto the NFC tag.
+    const origin = `${req.protocol}://${req.get('host')}`;
+    res.status(201).json({
+      persisted,
+      patient: staffProfile(patient),
+      cardUrl: `${origin}/#/t/${patient.cardId}`,
+    });
+  } catch (error) {
+    res.status(error.status ?? 500).json({ error: error.message });
+  }
 });
 
 // --- live feed ---------------------------------------------------------------

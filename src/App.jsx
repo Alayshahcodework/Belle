@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import PatientView from './PatientView.jsx';
 import StaffLogin from './StaffLogin.jsx';
 import StaffView from './StaffView.jsx';
+import AdminView from './AdminView.jsx';
 import { getToken, staffMe, clearToken } from './api.js';
 
 function useHashRoute() {
@@ -89,7 +90,7 @@ function Launcher() {
   );
 }
 
-function StaffRoute() {
+function StaffRoute({ admin = false }) {
   const [session, setSession] = useState(null);
   const [checked, setChecked] = useState(false);
 
@@ -106,6 +107,7 @@ function StaffRoute() {
 
   if (!checked) return <div className="card-error"><h1>Checking your session…</h1></div>;
   if (!session) return <StaffLogin onSignedIn={setSession} />;
+  if (admin) return <AdminView session={session} />;
   return <StaffView session={session} onSignedOut={() => setSession(null)} />;
 }
 
@@ -114,6 +116,7 @@ export default function App() {
 
   const cardMatch = hash.match(/^#\/t\/([^/?]+)/);
   if (cardMatch) return <PatientView cardId={decodeURIComponent(cardMatch[1])} />;
+  if (hash.startsWith('#/admin')) return <StaffRoute admin />;
   if (hash.startsWith('#/staff')) return <StaffRoute />;
   return <Launcher />;
 }

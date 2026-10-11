@@ -99,3 +99,13 @@ export function subscribeToTickets({ card } = {}, onEvent, onStatus) {
 
   return () => source.close();
 }
+
+// --- admin (charge nurse) ------------------------------------------------------
+export const getAdminOptions = () =>
+  fetch('/api/admin/options', { headers: authHeaders() }).then(json);
+
+export const getAdminStaff = () => fetch('/api/admin/staff', { headers: authHeaders() }).then(json);
+
+export const addStaffAccount = (body) => post('/api/admin/staff', body, true);
+
+export const addPatientRecord = (body) => post('/api/admin/patients', body, true);

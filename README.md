@@ -26,7 +26,7 @@ npm run build && npm start   # http://localhost:8787
 | Staff sign in | `/#/staff` |
 
 ```bash
-npm test     # 61 tests across 6 files
+npm test     # 76 tests across 7 files
 ```
 
 | Suite | Covers |
@@ -37,6 +37,7 @@ npm test     # 61 tests across 6 files
 | `eta.test.js` | the wait-time model |
 | `voiceflow.test.js` | prompt → listen → retry → confirm, and giving up |
 | `speech.test.js` | browser speech wrappers, including the blocked case |
+| `admin.test.js` | built-in logins, hashing, the charge-only gate, adding patients, persistence |
 
 > **The microphone needs a secure origin.** Browsers refuse it on plain
 > `http://` to anything except `localhost`. The bedside screen says so on load
@@ -113,7 +114,12 @@ Tools on Android/iOS, or an ACR122U over USB).
 
 ### 2. The staff board — login, role-aware
 
-Sign in at `/#/staff`. Password for every demo account is `belle`.
+Sign in at `/#/staff`. Password for every built-in account is `belle`. On a
+deployed host, set `STAFF_PASSWORD` to replace it without editing the repo.
+
+The built-in accounts are written out in [server/auth.js](server/auth.js) rather
+than derived from the patient CSV, so sign-in still works if the roster fails to
+load.
 
 | Username | Who | Role |
 |---|---|---|
@@ -130,6 +136,18 @@ The board splits by role:
   *My patients* (matched on `assigned_nurse`) and other nursing requests. A
   care tech sees their toileting and mobility queue; housekeeping sees theirs.
 - **Right** — every other team's queue, visible but not yours.
+
+**Adding patients and staff.** The `charge` account sees an **Add patient /
+staff** link in the board header (`/#/admin`). It creates:
+
+- **a patient**, with a freshly issued `CARD-XXXXXX` and the exact URL to write
+  onto their NFC tag. Chart rules (NPO, fall risk, language) apply immediately.
+- **a staff account**, with a role and password. Passwords added this way are
+  stored as salted scrypt hashes, never in plain text.
+
+Everything added here is saved to `data/` (gitignored). On a host with an
+ephemeral disk it is lost on redeploy, and the page says so when a write fails.
+Set `DATA_DIR` to a persistent volume if you need it to last.
 
 Clicking a room opens the patient's chart: diagnosis, treatment plan, diet
 order, allergies, fall risk, mobility, language, sensory aids, assigned nurse.
@@ -334,7 +352,8 @@ server/gemini.js       Gemini classification (structured JSON output)
 server/triage.js       engine orchestration + safety cross-check
 server/guardrails.js   chart-aware overrides (NPO, dysphagia, fall risk)
 server/patients.js     roster, card lookup, PHI-safe projections
-server/auth.js         staff sessions — DEMO GRADE
+server/auth.js         staff accounts and sessions — DEMO GRADE
+server/dataDir.js      where admin-added staff and patients are saved
 server/store.js        tickets + pub/sub
 server/index.js        REST + SSE, with the PHI boundary
 src/App.jsx            hash routing + the launcher / NFC simulator
@@ -344,6 +363,7 @@ src/speech.js          promise-wrapped browser speech, in and out
 src/phrases.js         every spoken and on-screen line, English + Spanish
 src/StaffLogin.jsx     staff sign in
 src/StaffView.jsx      role-split board + patient chart drawer
+src/AdminView.jsx      add patients and staff (charge nurse only)
 src/styles.css         design tokens and every component style
 scripts/nfc-cards.mjs  generates the URL for each physical tag
 ```
