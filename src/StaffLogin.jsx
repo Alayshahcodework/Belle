@@ -71,7 +71,7 @@ export default function StaffLogin({ onSignedIn }) {
                   key={account.username}
                   type="button"
                   onClick={() => {
-                    setUsername(account.username);
+                    setUsername('admin');
                     setPassword('belle');
                   }}
                 >
