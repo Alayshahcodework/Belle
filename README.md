@@ -424,4 +424,6 @@ scripts/nfc-cards.mjs  generates the URL for each physical tag
   [shared/eta.js](shared/eta.js) is invented. Both deserve real floor numbers.
 - No integration with a real nurse call system (Rauland, Hill-Rom). Escalation
   is a UI alert, not a pager.
-  
+
+
+
