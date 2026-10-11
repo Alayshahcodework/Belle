@@ -59,6 +59,11 @@ const PORT = process.env.PORT || 8787;
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
+
+// Hosts like Render terminate HTTPS at a proxy and forward plain HTTP. Trusting
+// X-Forwarded-Proto makes req.protocol report https, so the NFC tag URLs the
+// admin page hands out are https rather than http.
+app.set('trust proxy', true);
 app.use(express.json({ limit: '32kb' }));
 
 const quickActionsById = new Map(

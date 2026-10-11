@@ -43,6 +43,31 @@ npm test     # 76 tests across 7 files
 > `http://` to anything except `localhost`. The bedside screen says so on load
 > when that is the problem. See [Known gaps](#known-gaps).
 
+## Deploying
+
+Belle is a website **and** a Node server (`server/index.js`) that handles
+sign-in, patients, requests, live updates and Gemini. It needs a host that runs
+Node.
+
+**Static hosts do not work.** Vercel, Netlify and GitHub Pages publish the built
+pages but never start the server, so the site loads and then every `/api` call,
+sign-in included, returns 404.
+
+**Render** (free tier) runs it as-is, using [render.yaml](render.yaml):
+
+1. [dashboard.render.com](https://dashboard.render.com) → sign in with GitHub.
+2. **New → Blueprint** → choose this repo → **Apply**.
+3. Paste your `GEMINI_API_KEY` when asked.
+4. Wait for the deploy to go live, then sign in at `https://<your-service>.onrender.com/#/staff`.
+
+Or set it up by hand as a **Web Service**: build `npm ci --include=dev && npm run build`,
+start `npm start`, environment variable `GEMINI_API_KEY`.
+
+On Render's free plan the service sleeps after about 15 minutes idle (the first
+visit after that takes up to a minute), and its disk is wiped on every restart,
+so patients and staff added from the admin page do not last. The 120 patients
+in the CSV and the 13 built-in accounts always do.
+
 ## Two separate interfaces
 
 ### 1. The bedside tablet — NFC, voice first

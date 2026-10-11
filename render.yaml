@@ -1,0 +1,26 @@
+# Render Blueprint: one web service that runs the Node server, which serves
+# both the website and the /api routes.
+#
+# Belle cannot run on a static host such as Vercel, Netlify or GitHub Pages:
+# those publish the built pages but never start server/index.js, so every
+# /api request (sign-in included) returns 404.
+#
+# Render dashboard → New → Blueprint → choose this repo → enter GEMINI_API_KEY.
+
+services:
+  - type: web
+    name: belle
+    runtime: node
+    plan: free
+    # --include=dev: the build tool (vite) is a dev dependency, and some
+    # environments skip those, which leaves no website to serve.
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/meta
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Prompted for in the dashboard; never committed. Without it Belle runs on
+      # the keyword engine instead of Gemini.
+      - key: GEMINI_API_KEY
+        sync: false
